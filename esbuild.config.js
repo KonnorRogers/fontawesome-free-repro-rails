@@ -6,6 +6,24 @@ const entryPoints = { "application": path.join("app", "javascript", "application
 
 const watchMode = Boolean(process.argv.includes('--watch'))
 
+
+/** @type {() => import("esbuild").Plugin} */
+const FontAwesomeFontLoader = () => {
+  return {
+    name: "font-awesome-font-loader",
+    setup: (build) => {
+      // Uncomment for proper loading
+      // build.onResolve({ filter: /@fortawesome\/fontawesome-free\/(webfonts|css)/ }, async (args) => {
+      //   return {
+      //     path: args.path,
+      //     // Mark external and make sure to add node_modules to AssetPipeline.
+      //     external: true,
+      //   }
+      // })
+    }
+  }
+}
+
 esbuild
   .build({
     entryPoints,
@@ -15,6 +33,7 @@ esbuild
     sourcemap: true,
     outdir: path.join(process.cwd(), 'app', 'assets', 'builds'),
     outbase: 'app/javascript',
+    plugins: [FontAwesomeFontLoader()],
     watch: watchMode
       ? {
           onRebuild(error, result) {
@@ -26,6 +45,7 @@ esbuild
           },
         }
       : false,
+    publicPath: "/assets",
     entryNames: '[dir]/[name]',
     chunkNames: 'chunks/[dir]/[name]',
     assetNames: 'media/[dir]/[name]',
